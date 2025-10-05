@@ -1,67 +1,81 @@
-Dieses Projekt berührt alle geforderten Kenntnisse: C++, Bildverarbeitung und algorithmisches Denken. Es ist ein klassisches Thema aus der Bildforensik.
+# Programmierprojekt: LSB-Steganographie in C++
 
-Projekt: Ein einfacher LSB-Steganographie-Encoder/Decoder
-Die Idee: Steganographie ist die Kunst, eine Nachricht in einem anderen Medium (hier ein Bild) zu verstecken. Die einfachste Methode ist Least Significant Bit (LSB) Steganography. Dabei wird das niederwertigste Bit jedes Farbkanals (Rot, Grün, Blau) eines Pixels durch ein Bit der geheimen Nachricht ersetzt. Für das menschliche Auge ist diese winzige Änderung kaum sichtbar.
+Dieses Projekt ist eine ideale, praktische Vorbereitung auf die Inhalte der Vorlesung "Multimedia Security". Es berührt alle geforderten Kernkompetenzen: C++-Programmierung, grundlegende Bildverarbeitung und algorithmisches Denken.
 
-Warum dieses Projekt?
+---
 
-Direkter Bezug: Es ist ein Kernthema der Vorlesung (Steganographie).
+## Die Idee: Versteckte Nachrichten in Bildern 🖼️
 
-C++ Übung: Du benötigst Klassen, File-I/O und Bit-Operationen.
+Steganographie ist die Kunst, eine Nachricht in einem Trägermedium (in unserem Fall ein Bild) so zu verstecken, dass ihre Existenz für Dritte nicht offensichtlich ist.
 
-Bildverarbeitung: Du musst Pixel für Pixel durch ein Bild iterieren und deren Farbwerte manipulieren.
+Wir verwenden die einfachste und bekannteste Methode: **Least Significant Bit (LSB) Steganography**. Die Idee ist simpel: Jedes Pixel eines Bildes besteht aus Farbwerten, z.B. für Rot, Grün und Blau (RGB). Jeder dieser Farbwerte ist ein Byte (8 Bits). Wir verändern nur das **allerletzte, unwichtigste Bit** (das LSB) jedes Farbwertes und ersetzen es durch ein Bit unserer geheimen Nachricht. Diese Änderung ist für das menschliche Auge praktisch unsichtbar, erlaubt uns aber, Daten im Bild zu "schmuggeln".
 
-Machbarkeit: In einer Woche gut schaffbar.
 
-Tagesplan für das Projekt:
-Tag 1: Setup und Bild laden/speichern.
 
-Richte deine C++ Entwicklungsumgebung ein (z.B. Visual Studio Code mit g++).
+---
 
-Installiere eine einfache Bildverarbeitungsbibliothek. Empfehlung: stb_image.h und stb_image_write.h. Das sind zwei Header-Only-Bibliotheken, die extrem einfach zu benutzen sind. Du musst nichts kompliziertes kompilieren oder linken.
+## Warum dieses Projekt ideal zur Vorbereitung ist
 
-Schreibe ein C++ Programm, das ein Bild von der Festplatte lädt (z.B. eine PNG-Datei), die Dimensionen ausgibt und es unter einem neuen Namen wieder abspeichert.
+* **Direkter Bezug:** Steganographie ist ein Kernthema der Vorlesung.
+* **C++ Übung:** Du trainierst den Umgang mit Klassen, Datei-I/O (File-I/O) und Bit-Operationen – allesamt wichtige Programmiergrundlagen.
+* **Bildverarbeitung:** Du lernst, Pixel für Pixel durch ein Bild zu iterieren und deren Daten auf unterster Ebene zu manipulieren.
+* **Machbarkeit:** Das Projekt ist so konzipiert, dass es in einer Woche gut zu bewältigen ist.
 
-Tag 2-3: Implementierung des Encoders.
+---
 
-Erstelle eine Funktion void encode(const char* imagePath, const std::string& message, const char* outputPath).
+## Projektplan für eine Woche 🚀
 
-Lade das Bild.
+### Tag 1: Setup und Grundlagen
 
-Iteriere durch die Pixel des Bildes. Für jedes Bit deiner Nachricht message:
+Das Ziel des ersten Tages ist es, deine Arbeitsumgebung einzurichten und eine grundlegende Bildoperation durchzuführen.
 
-Nimm den Bytewert eines Farbkanals (z.B. Rot).
+1.  **Entwicklungsumgebung einrichten:** Installiere und konfiguriere deine C++-Umgebung (z.B. Visual Studio Code mit g++ Compiler, CLion oder Visual Studio).
+2.  **Bildbibliothek integrieren:** Lade die Header-Only-Bibliotheken **`stb_image.h`** und **`stb_image_write.h`** herunter. Diese sind extrem einfach zu nutzen, da du sie nur in dein Projekt einbinden musst, ohne komplexe Kompilierungs- oder Linker-Schritte.
+3.  **Erstes Programm schreiben:** Implementiere ein einfaches C++-Programm, das:
+    * Eine Bilddatei (z.B. `input.png`) von der Festplatte lädt.
+    * Die Bilddimensionen (Breite und Höhe) auf der Konsole ausgibt.
+    * Das geladene Bild unverändert unter einem neuen Namen (z.B. `copy.png`) wieder abspeichert.
 
-Setze das niederwertigste Bit (LSB) dieses Bytewertes auf 0 (z.B. color_byte = color_byte & 0xFE;).
+### Tag 2-3: Implementierung des Encoders
 
-Setze das LSB dann auf das aktuelle Bit deiner Nachricht (z.B. color_byte = color_byte | message_bit;).
+Jetzt implementieren wir die Kernlogik zum Verstecken der Nachricht.
 
-Achte darauf, dass du nicht mehr Bits verstecken willst, als im Bild Platz haben (Breite * Höhe * 3). Es ist auch üblich, zuerst die Länge der Nachricht zu kodieren, damit der Decoder weiß, wann er aufhören muss zu lesen.
+* **Funktion erstellen:** Schreibe eine Funktion mit der Signatur `void encode(const char* imagePath, const std::string& message, const char* outputPath);`.
+* **Ablauf in der Funktion:**
+    1.  Lade das Bild unter `imagePath`.
+    2.  **Wichtig:** Kodiere zuerst die Länge der Nachricht in die ersten Bits des Bildes. So weiß der Decoder später, wie viele Bits er lesen muss.
+    3.  Iteriere durch jedes Bit deiner `message`.
+    4.  Für jedes Nachrichten-Bit, nimm den nächsten verfügbaren Farbkanal (R, G, B, R, G, B, ...) des Bildes.
+    5.  Setze das LSB dieses Farbwerts zuerst auf 0 mittels einer bitweisen UND-Verknüpfung: `color_byte = color_byte & 0xFE;` (0xFE ist binär `11111110`).
+    6.  Setze das LSB dann auf den Wert deines Nachrichten-Bits (0 oder 1) mittels einer bitweisen ODER-Verknüpfung: `color_byte = color_byte | message_bit;`.
+    7.  Stelle sicher, dass die Nachricht nicht länger ist als die Kapazität des Bildes (Breite × Höhe × 3 Bits).
+    8.  Speichere das modifizierte Bild unter `outputPath`.
 
-Speichere das modifizierte Bild im outputPath.
+### Tag 4-5: Implementierung des Decoders
 
-Tag 4-5: Implementierung des Decoders.
+Nun schreiben wir die Logik, um die versteckte Nachricht wieder auszulesen.
 
-Erstelle eine Funktion std::string decode(const char* imagePath).
+* **Funktion erstellen:** Schreibe eine Funktion mit der Signatur `std::string decode(const char* imagePath);`.
+* **Ablauf in der Funktion:**
+    1.  Lade das steganographisch veränderte Bild (`imagePath`).
+    2.  Lies zuerst die Länge der versteckten Nachricht aus den ersten Bits des Bildes aus.
+    3.  Iteriere nun so oft, wie die ausgelesene Länge es vorgibt, durch die Farbkanäle der Pixel.
+    4.  Extrahiere bei jedem Farbkanal nur das LSB durch eine bitweise UND-Verknüpfung: `lsb = color_byte & 1;`.
+    5.  Sammle diese einzelnen Bits und setze sie nach und nach wieder zu Bytes (und damit zu Zeichen) zusammen.
+    6.  Gib die vollständig rekonstruierte Nachricht als `std::string` zurück.
 
-Lade das steganographisch veränderte Bild.
+### Tag 6-7: Testen, Aufräumen & Kommandozeile
 
-Iteriere wieder durch die Pixel und ihre Farbkanäle.
+Im letzten Schritt machen wir das Programm benutzerfreundlich und robust.
 
-Extrahiere aus jedem Farbkanal das LSB (lsb = color_byte & 1;).
+1.  **`main`-Funktion erstellen:** Implementiere eine `main`-Funktion, die Kommandozeilenargumente verarbeitet, um entweder den Encoder oder den Decoder aufzurufen.
+2.  **Beispielaufrufe implementieren:**
+    ```bash
+    # Nachricht verstecken
+    ./steganography encode input.png "Meine streng geheime Nachricht!" output.png
 
-Sammle diese Bits und setze sie zu Bytes (und dann zu Zeichen) zusammen, um die ursprüngliche Nachricht zu rekonstruieren.
-
-Höre auf, wenn du die (zuvor mitkodierte) Länge der Nachricht erreicht hast.
-
-Tag 6-7: Testen und Aufräumen.
-
-Erstelle eine main-Funktion, die Kommandozeilenargumente entgegennimmt, um entweder den Encoder oder den Decoder aufzurufen.
-
-Beispielaufruf: ./steganography encode input.png "Geheime Nachricht" output.png
-
-Beispielaufruf: ./steganography decode output.png
-
-Teste dein Programm mit verschiedenen Bildern und Nachrichten. Überprüfe, ob die dekodierte Nachricht exakt der Originalnachricht entspricht.
-
-Schau dir das output.png an. Siehst du einen Unterschied zum Original? Wahrscheinlich nicht!
+    # Nachricht auslesen
+    ./steganography decode output.png
+    ```
+3.  **Testen:** Überprüfe dein Programm mit verschiedenen Bildern (PNG, BMP) und Nachrichten (kurze und lange Texte, Sonderzeichen). Die dekodierte Nachricht muss **exakt** dem Original entsprechen.
+4.  **Visueller Check:** Öffne `input.png` und `output.png` und vergleiche sie. Fällt dir mit bloßem Auge ein Unterschied auf? (Die Antwort sollte "Nein" lauten).
